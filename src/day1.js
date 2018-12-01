@@ -1,3 +1,23 @@
+export const chronalCalibrate = (input, delimiter = ', ') =>
+  input.split(delimiter).reduce((prev, curr) => prev + Number(curr), 0);
+
+export const repeatingchronalCalibrate = (input, delimiter = ',') => {
+  const list = input.split(delimiter);
+  const length = list.length;
+  let previousResults = [0];
+  let result = 0;
+  for (let index = 0; index < length; index = (index + 1) % length) {
+    const element = Number(list[index]);
+    const newResult = result + element;
+    if (previousResults.includes(newResult)) {
+      return newResult;
+    } else {
+      previousResults.push(newResult);
+      result = newResult;
+    }
+  }
+};
+
 export const personalInput = `+19
 -13
 +3
@@ -956,23 +976,3 @@ export const personalInput = `+19
 -13
 -7
 +121412`;
-
-export const chronalCalibrate = (input, delimiter = ', ') =>
-  input.split(delimiter).reduce((prev, curr) => prev + Number(curr), 0);
-
-export const repeatingchronalCalibrate = (input, delimiter = ',') => {
-  const list = input.split(delimiter);
-  const length = list.length;
-  let previousResults = [0];
-  let result = 0;
-  for (let index = 0; index < length; index = (index + 1) % length) {
-    const element = Number(list[index]);
-    const newResult = result + element;
-    if (previousResults.includes(newResult)) {
-      return newResult;
-    } else {
-      previousResults.push(newResult);
-      result = newResult;
-    }
-  }
-};
