@@ -1,7 +1,7 @@
 export const chronalCalibrate = (input, delimiter = ', ') =>
   input.split(delimiter).reduce((prev, curr) => prev + Number(curr), 0);
 
-export const repeatingchronalCalibrate = (input, delimiter = ',') => {
+export const repeatingChronalCalibrate = (input, delimiter = ',') => {
   const list = input.split(delimiter);
   const length = list.length;
   let previousResults = [0];

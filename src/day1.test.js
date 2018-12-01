@@ -1,7 +1,7 @@
 import {
   chronalCalibrate,
   personalInput,
-  repeatingchronalCalibrate,
+  repeatingChronalCalibrate,
 } from './day1';
 
 describe('Day 1 Chronal Calibration Part 1', () => {
@@ -32,11 +32,11 @@ describe('Day 1 Chronal Calibration Part 2', () => {
   ];
   examples.forEach(([input, expectedResult]) => {
     test(`should correctly calculate ${expectedResult} for repeated ${input}`, () => {
-      expect(repeatingchronalCalibrate(input)).toBe(expectedResult);
+      expect(repeatingChronalCalibrate(input)).toBe(expectedResult);
     });
   });
 
   test('should correctly calculate my personal input', () => {
-    expect(repeatingchronalCalibrate(personalInput, '\n')).toBe(227);
+    expect(repeatingChronalCalibrate(personalInput, '\n')).toBe(227);
   });
 });
