@@ -11,18 +11,11 @@ export const scanBoxId = boxId =>
         {}
       )
   ).reduce(
-    (acc, letterOccurences) => ({
-      ...acc,
-      ...(letterOccurences === 2
-        ? { twice: true }
-        : letterOccurences === 3
-        ? { thrice: true }
-        : null),
-    }),
-    {
-      twice: false,
-      thrice: false,
-    }
+    ([twice, thrice], letterOccurences) => [
+      letterOccurences === 2 ? true : twice,
+      letterOccurences === 3 ? true : thrice,
+    ],
+    [false, false]
   );
 
 export const calculateCheckSum = (boxIds, delimiter = '\n') =>
@@ -30,9 +23,9 @@ export const calculateCheckSum = (boxIds, delimiter = '\n') =>
     .split(delimiter)
     .map(boxId => scanBoxId(boxId))
     .reduce(
-      ([two, three], { twice, thrice }) => [
-        twice ? two + 1 : two,
-        thrice ? three + 1 : three,
+      ([amountOfTwice, amountOfThrice], [twice, thrice]) => [
+        twice ? amountOfTwice + 1 : amountOfTwice,
+        thrice ? amountOfThrice + 1 : amountOfThrice,
       ],
       [0, 0]
     )
