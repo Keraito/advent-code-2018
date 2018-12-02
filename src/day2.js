@@ -33,32 +33,30 @@ export const calculateCheckSum = (boxIds, delimiter = '\n') =>
     .reduce((prev, curr) => prev * curr, 1);
 
 // Part 2
-export const matchBoxes = (boxesString, delimiter = '\n') => {
-  const listOfBoxes = boxesString.split(delimiter);
-  const length = listOfBoxes.length;
-  let result = '';
-  for (let index = 0; index < length; index++) {
-    const currentBox = listOfBoxes[index];
-    let mostSimilarBox = '';
-    for (let compareIndex = index + 1; compareIndex < length; compareIndex++) {
-      let currentSimilarBoxId = '';
-      const nextBox = listOfBoxes[compareIndex];
-      for (let letterIndex = 0; letterIndex < nextBox.length; letterIndex++) {
-        const currentLetter = currentBox[letterIndex];
-        if (currentLetter === nextBox[letterIndex]) {
-          currentSimilarBoxId += currentLetter;
-        }
+export const matchBoxes = (boxesString, delimiter = '\n') =>
+  boxesString
+    .split(delimiter)
+    .reduce((currFinalLongestMatchingId, currentBox, index, array) => {
+      const finalLongestMatchingId = array
+        .slice(index + 1)
+        .reduce((currLongestMatchingId, nextBox) => {
+          const longestMatchingId = nextBox
+            .split('')
+            .reduce(
+              (accId, letter, index) =>
+                letter === currentBox[index] ? accId + letter : accId,
+              ''
+            );
+          if (longestMatchingId.length > currLongestMatchingId.length) {
+            return longestMatchingId;
+          }
+          return currLongestMatchingId;
+        }, '');
+      if (finalLongestMatchingId.length > currFinalLongestMatchingId.length) {
+        return finalLongestMatchingId;
       }
-      if (currentSimilarBoxId.length > mostSimilarBox.length) {
-        mostSimilarBox = currentSimilarBoxId;
-      }
-    }
-    if (mostSimilarBox.length > result.length) {
-      result = mostSimilarBox;
-    }
-  }
-  return result;
-};
+      return currFinalLongestMatchingId;
+    }, '');
 
 export const myInput = `mvgowxqubnhaefjslkjlrptzyi
 pvgowlqubnhaefmslkjdrpteyi
