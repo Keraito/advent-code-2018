@@ -1,3 +1,4 @@
+// Part 1
 export const scanBoxId = boxId =>
   Object.values(
     boxId
@@ -30,6 +31,34 @@ export const calculateCheckSum = (boxIds, delimiter = '\n') =>
       [0, 0]
     )
     .reduce((prev, curr) => prev * curr, 1);
+
+// Part 2
+export const matchBoxes = (boxesString, delimiter = '\n') => {
+  const listOfBoxes = boxesString.split(delimiter);
+  const length = listOfBoxes.length;
+  let result = '';
+  for (let index = 0; index < length; index++) {
+    const currentBox = listOfBoxes[index];
+    let mostSimilarBox = '';
+    for (let compareIndex = index + 1; compareIndex < length; compareIndex++) {
+      let currentSimilarBoxId = '';
+      const nextBox = listOfBoxes[compareIndex];
+      for (let letterIndex = 0; letterIndex < nextBox.length; letterIndex++) {
+        const currentLetter = currentBox[letterIndex];
+        if (currentLetter === nextBox[letterIndex]) {
+          currentSimilarBoxId += currentLetter;
+        }
+      }
+      if (currentSimilarBoxId.length > mostSimilarBox.length) {
+        mostSimilarBox = currentSimilarBoxId;
+      }
+    }
+    if (mostSimilarBox.length > result.length) {
+      result = mostSimilarBox;
+    }
+  }
+  return result;
+};
 
 export const myInput = `mvgowxqubnhaefjslkjlrptzyi
 pvgowlqubnhaefmslkjdrpteyi

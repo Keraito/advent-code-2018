@@ -1,5 +1,5 @@
-import { scanBoxId, calculateCheckSum, myInput } from './day2';
-describe('Day 2 Box Scanner Part 1', () => {
+import { scanBoxId, calculateCheckSum, myInput, matchBoxes } from './day2';
+describe('Day 2 Part 1: Box Scanner', () => {
   const examples = [
     ['abcdef', [false, false]],
     ['bababc', [true, true]],
@@ -25,5 +25,22 @@ describe('Day 2 Box Scanner Part 1', () => {
 
   test('should calculate the checksum for my input correctly', () => {
     expect(calculateCheckSum(myInput)).toBe(5368);
+  });
+});
+
+describe('Day 2 Part 2: Boxes Matcher', () => {
+  test('should correctly match the example', () => {
+    const example = `abcde
+fghij
+klmno
+pqrst
+fguij
+axcye
+wvxyz`;
+    expect(matchBoxes(example)).toBe('fgij');
+  });
+
+  test('should correctly match my input', () => {
+    expect(matchBoxes(myInput)).toBe('cvgywxqubnuaefmsljdrpfzyi');
   });
 });
