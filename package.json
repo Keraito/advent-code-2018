@@ -15,11 +15,6 @@
     "typescript": "^3.2.1"
   },
   "scripts": {
-    "test": "jest",
-    "test:js": "yarn run test src",
-    "build:ts": "babel src --out-dir lib --extensions \".ts,.tsc\" --source-maps inline",
-    "prebuild:ts": "rm -rf lib",
-    "test:ts": "yarn run test lib",
-    "pretest:ts": "yarn run build:ts"
+    "test": "jest"
   }
 }
