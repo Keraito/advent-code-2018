@@ -1,5 +1,5 @@
-import { mapClaim } from './day3';
-describe('Day 3 Part 3:', () => {
+import { mapClaim, getOverlappingFabric, myInput } from './day3';
+describe('Day 3 Part 1:', () => {
   test('should create a correct map for the example', () => {
     const example = '#123 @ 3,2: 5x4';
     expect(mapClaim(example)).toEqual({
@@ -32,5 +32,16 @@ describe('Day 3 Part 3:', () => {
         8: true,
       },
     });
+  });
+
+  test('should correctly calculate overlapping fabric for example', () => {
+    const claims = `#1 @ 1,3: 4x4
+#2 @ 3,1: 4x4
+#3 @ 5,5: 2x2`;
+    expect(getOverlappingFabric(claims)).toBe(4);
+  });
+
+  test('should correctly calculate overlapping fabric for my input', () => {
+    expect(getOverlappingFabric(myInput)).toBe(104241);
   });
 });
