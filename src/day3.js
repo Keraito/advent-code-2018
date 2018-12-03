@@ -10,21 +10,21 @@ export const mapClaim = claim => {
   const [width, tall] = sizes.split('x').map(Number);
   let columns = {};
   for (let columnIndex = 1; columnIndex <= width; columnIndex++) {
-    columns = Object.assign(columns, { [columnIndex + leftMargin]: true });
+    columns = Object.assign(columns, { [columnIndex + leftMargin]: id });
   }
   let result = {};
   for (let rowIndex = 1; rowIndex <= tall; rowIndex++) {
     result = Object.assign(result, { [rowIndex + topMargin]: columns });
   }
-  return result;
+  return [id, result];
 };
 
-export const getOverlappingFabric = claims =>
+const getClaimsMaps = claims =>
   claims
     .split('\n')
     .map(mapClaim)
     .reduce(
-      ([map, overlappingMap], curr) => {
+      ([map, overlappingMap], [id, curr]) => {
         const [resMap, resOverlappingMap] = Object.entries(curr).reduce(
           ([currMap, currOverMap], [key, value]) => {
             if (!currMap[key]) {
@@ -35,11 +35,18 @@ export const getOverlappingFabric = claims =>
               const filtered = Object.keys(savedRowColumns).filter(
                 checkKey => value[checkKey]
               );
-              // console.log(key, savedRowColumns, value, filtered);
               const newOverlappingMap = filtered.reduce(
                 (prev, curr) =>
                   Object.assign(prev, {
-                    [key]: Object.assign(prev[key] || {}, { [curr]: true }),
+                    [key]: Object.assign(prev[key] || {}, {
+                      [curr]: [
+                        ...(currOverMap[key] && currOverMap[key][curr]
+                          ? currOverMap[key][curr]
+                          : []),
+                        savedRowColumns[curr],
+                        id,
+                      ],
+                    }),
                   }),
                 currOverMap
               );
@@ -57,17 +64,42 @@ export const getOverlappingFabric = claims =>
         return [resMap, resOverlappingMap];
       },
       [{}, {}]
-    )
-    .reduce(
-      (prev, curr, index) =>
-        index === 1
-          ? Object.values(curr).reduce(
-              (prev, curr) => prev + Object.values(curr).length,
-              0
-            )
-          : 0,
-      0
     );
+
+export const getOverlappingFabric = claims =>
+  getClaimsMaps(claims).reduce(
+    (prev, curr, index) =>
+      index === 1
+        ? Object.values(curr).reduce(
+            (prev, curr) => prev + Object.values(curr).length,
+            0
+          )
+        : 0,
+    0
+  );
+
+export const getNonOverlappingFabric = claims => {
+  const claimIndices = claims
+    .split('\n')
+    .map(mapClaim)
+    .map(([id, _]) => id)
+    .reduce((prev, curr) => Object.assign(prev, { [curr]: true }), {});
+  const [x, overMap] = getClaimsMaps(claims);
+  // console.log(overMap);
+  for (const column in overMap) {
+    // if (overMap.hasOwnProperty(column)) {
+    for (const rowIndex in overMap[column]) {
+      // if (column.hasOwnProperty(rowIndex)) {
+      // console.log(overMap[column][rowIndex]);
+      overMap[column][rowIndex].forEach(element => {
+        delete claimIndices[element];
+      });
+      // }
+    }
+    // }
+  }
+  return claimIndices;
+};
 
 export const myInput = `#1 @ 749,666: 27x15
 #2 @ 118,560: 22x18
