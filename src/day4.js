@@ -40,18 +40,18 @@ const mapSleepingRecords = (recordEntries, delimiter = '\n') =>
         };
       }
       if (message.includes(MESSAGES.SLEEPS)) {
-        if (!prev[currentDateString]) {
-          console.log(currentDateString, message);
-          console.log(
-            recordsArray
-              .filter(([ts, message], i) => Math.abs(i - index) <= 5)
-              .map(([timestamp, message]) => [
-                `${timestamp.getMonth() + 1}-${timestamp.getDate()}`,
-                timestamp,
-                message,
-              ])
-          );
-        }
+        // if (!prev[currentDateString]) {
+        //   console.log(currentDateString, message);
+        //   console.log(
+        //     recordsArray
+        //       .filter(([ts, message], i) => Math.abs(i - index) <= 5)
+        //       .map(([timestamp, message]) => [
+        //         `${timestamp.getMonth() + 1}-${timestamp.getDate()}`,
+        //         timestamp,
+        //         message,
+        //       ])
+        //   );
+        // }
         const { id, sleepTimeArray } = prev[currentDateString]
           ? prev[currentDateString]
           : {
@@ -79,23 +79,30 @@ const mapSleepingRecords = (recordEntries, delimiter = '\n') =>
     {}
   );
 
+const mapGuardsToSleepingMinutes = (recordEntries, delimiter = '\n') =>
+  Object.values(mapSleepingRecords(recordEntries, delimiter)).reduce(
+    (prev, curr) => {
+      const { id, sleepTimeArray } = curr;
+      const existingSleepTimeArray = prev[id];
+      const sleepMappingFunction = existingSleepTimeArray
+        ? (sleeping, index) =>
+            sleeping
+              ? existingSleepTimeArray[index] + 1
+              : existingSleepTimeArray[index]
+        : sleeping => (sleeping ? 1 : 0);
+      return {
+        ...prev,
+        [id]: sleepTimeArray.map(sleepMappingFunction),
+      };
+    },
+    {}
+  );
+
 export const guardTimesMostAsleepMinute = (recordEntries, delimiter = '\n') => {
-  const guardToSleepingMinutes = Object.values(
-    mapSleepingRecords(recordEntries, delimiter)
-  ).reduce((prev, curr) => {
-    const { id, sleepTimeArray } = curr;
-    const existingSleepTimeArray = prev[id];
-    const sleepMappingFunction = existingSleepTimeArray
-      ? (sleeping, index) =>
-          sleeping
-            ? existingSleepTimeArray[index] + 1
-            : existingSleepTimeArray[index]
-      : sleeping => (sleeping ? 1 : 0);
-    return {
-      ...prev,
-      [id]: sleepTimeArray.map(sleepMappingFunction),
-    };
-  }, {});
+  const guardToSleepingMinutes = mapGuardsToSleepingMinutes(
+    recordEntries,
+    delimiter
+  );
   const laziestGuardAndMinutes = Object.entries(guardToSleepingMinutes).reduce(
     ([prevId, prevSleepArray], [currId, currSleepArray]) => {
       const currAmounts = currSleepArray.reduce((prev, curr) => prev + curr, 0);
@@ -106,13 +113,27 @@ export const guardTimesMostAsleepMinute = (recordEntries, delimiter = '\n') => {
     }
   );
   const [id, sleepPerMinutes] = laziestGuardAndMinutes;
-  console.log(
-    Number(id.slice(1)),
-    sleepPerMinutes.indexOf(Math.max(...sleepPerMinutes))
-  );
+  // console.log(
+  //   Number(id.slice(1)),
+  //   sleepPerMinutes.indexOf(Math.max(...sleepPerMinutes))
+  // );
   return (
     Number(id.slice(1)) * sleepPerMinutes.indexOf(Math.max(...sleepPerMinutes))
   );
+};
+
+export const guardMostFrequentlyAsleepTimesMinute = (
+  recordEntries,
+  delimiter = '\n'
+) => {
+  const [id, sleepArray] = Object.entries(
+    mapGuardsToSleepingMinutes(recordEntries, delimiter)
+  ).reduce(([prevId, prevSleepArray], [currId, currSleepArray]) =>
+    Math.max(...currSleepArray) > Math.max(...prevSleepArray)
+      ? [currId, currSleepArray]
+      : [prevId, prevSleepArray]
+  );
+  return Number(id.slice(1)) * sleepArray.indexOf(Math.max(...sleepArray));
 };
 
 export const myInput = `[1518-06-23 00:43] wakes up

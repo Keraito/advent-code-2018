@@ -3,6 +3,7 @@ import {
   getOrderedRecordEntries,
   myInput,
   guardTimesMostAsleepMinute,
+  guardMostFrequentlyAsleepTimesMinute,
 } from './day4';
 describe('Day 4 Part 1:', () => {
   test('should correctly parse a record', () => {
@@ -50,5 +51,8 @@ describe('Day 4 Part 1:', () => {
 
   test('should correctly do part 1 for my input', () => {
     expect(guardTimesMostAsleepMinute(myInput)).toBe(12169);
+  });
+  test('should correctly do part 2 for my input', () => {
+    expect(guardMostFrequentlyAsleepTimesMinute(myInput)).toBe(16164);
   });
 });
