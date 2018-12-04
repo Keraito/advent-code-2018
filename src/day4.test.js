@@ -48,7 +48,7 @@ describe('Day 4 Part 1:', () => {
     expect(guardTimesMostAsleepMinute(example)).toBe(240);
   });
 
-  // test('should correctly do part 1 for my input', () => {
-  //   expect(guardTimesMostAsleepMinute(myInput)).toBe(0);
-  // });
+  test('should correctly do part 1 for my input', () => {
+    expect(guardTimesMostAsleepMinute(myInput)).toBe(12169);
+  });
 });

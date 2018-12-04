@@ -25,19 +25,40 @@ const mapSleepingRecords = (recordEntries, delimiter = '\n') =>
         1}-${timestamp.getDate()}`;
       if (message.includes(MESSAGES.SHIFT_START)) {
         const sleepTimeArray = new Array(60).fill(false);
-
+        const tomorrowDate = recordsArray[index + 1];
+        const tomorrowDateString =
+          tomorrowDate && tomorrowDate[0].getMonth() > timestamp.getMonth()
+            ? `${tomorrowDate[0].getMonth() + 1}-${tomorrowDate[0].getDate()}`
+            : `${timestamp.getMonth() + 1}-${timestamp.getDate() + 1}`;
+        const id = message.split(' ')[1];
         return {
           ...prev,
-          [prev[currentDateString]
-            ? `${timestamp.getMonth() + 1}-${timestamp.getDate() + 1}`
-            : currentDateString]: {
+          [prev[currentDateString] ? tomorrowDateString : currentDateString]: {
+            id,
             sleepTimeArray,
-            id: message.split(' ')[1],
           },
         };
       }
       if (message.includes(MESSAGES.SLEEPS)) {
-        const { id, sleepTimeArray } = prev[currentDateString];
+        if (!prev[currentDateString]) {
+          console.log(currentDateString, message);
+          console.log(
+            recordsArray
+              .filter(([ts, message], i) => Math.abs(i - index) <= 5)
+              .map(([timestamp, message]) => [
+                `${timestamp.getMonth() + 1}-${timestamp.getDate()}`,
+                timestamp,
+                message,
+              ])
+          );
+        }
+        const { id, sleepTimeArray } = prev[currentDateString]
+          ? prev[currentDateString]
+          : {
+              id: recordsArray[index - 1][1].split()[1],
+              sleepTimeArray: new Array(60).fill(false),
+            };
+
         const firstSleepMinute = timestamp.getMinutes();
         const wakeUpMinute = recordsArray[index + 1][0].getMinutes();
         return {
@@ -85,6 +106,10 @@ export const guardTimesMostAsleepMinute = (recordEntries, delimiter = '\n') => {
     }
   );
   const [id, sleepPerMinutes] = laziestGuardAndMinutes;
+  console.log(
+    Number(id.slice(1)),
+    sleepPerMinutes.indexOf(Math.max(...sleepPerMinutes))
+  );
   return (
     Number(id.slice(1)) * sleepPerMinutes.indexOf(Math.max(...sleepPerMinutes))
   );
