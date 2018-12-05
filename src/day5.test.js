@@ -1,4 +1,4 @@
-import { reactPolymer, myInput } from './day5';
+import { reactPolymer, myInput, mostOptimalPolymer } from './day5';
 
 describe('Day 5 Part 1:', () => {
   const examples = [
@@ -15,5 +15,11 @@ describe('Day 5 Part 1:', () => {
   );
   test('should correctly react my polymer', () => {
     expect(reactPolymer(myInput).length).toBe(9202);
+  });
+});
+
+describe('Day 5 Part 2:', () => {
+  test('should get the most optimal polymer length for my input', () => {
+    expect(mostOptimalPolymer(myInput)).toBe(6394);
   });
 });
