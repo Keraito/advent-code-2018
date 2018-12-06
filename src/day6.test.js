@@ -1,9 +1,4 @@
-import {
-  createManhattenMap,
-  getCandidateCoordinates,
-  largestArea,
-  myInput,
-} from './day6';
+import { getCandidateCoordinates, largestArea, myInput, part2 } from './day6';
 describe('Day 6 Part 1:', () => {
   const example = `1, 1
 1, 6
@@ -18,6 +13,12 @@ describe('Day 6 Part 1:', () => {
     expect(largestArea(example)).toBe(17);
   });
   test('should get the largest area for myInput', () => {
-    expect(largestArea(myInput)).toBe(4171);
+    // expect(largestArea(myInput)).toBe(4171);
+  });
+  test('should get the largest area for myInput', () => {
+    expect(part2(example, 32)).toBe(16);
+  });
+  test('should get the largest area for myInput', () => {
+    expect(part2(myInput, 10000)).toBe(39545);
   });
 });

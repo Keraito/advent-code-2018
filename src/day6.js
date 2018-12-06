@@ -87,6 +87,35 @@ export const largestArea = coordinates => {
   // console.log(manhattenMap);
   return Object.values(result).reduce((prev, curr) => Math.max(prev, curr));
 };
+export const part2 = (coordinates, limit = 1000) => {
+  const parsedCoordinates = parseCoordinates(coordinates);
+  const [maxX, maxY] = parsedCoordinates.reduce(
+    ([prevX, prevY], [currX, currY]) => [
+      currX > prevX ? currX : prevX,
+      currY > prevY ? currY : prevY,
+    ],
+    [0, 0]
+  );
+
+  const initialManhattenMap = new Array(maxX + 1).fill(
+    new Array(maxY + 1).fill(undefined)
+  );
+  return initialManhattenMap.reduce(
+    (prev, curr, xIndex) =>
+      prev +
+      curr.reduce(
+        (pre, cur, yIndex) =>
+          parsedCoordinates.reduce(
+            (pr, cu) => pr + manhattenDistance(cu, [xIndex, yIndex]),
+            0
+          ) < limit
+            ? pre + 1
+            : pre,
+        0
+      ),
+    0
+  );
+};
 
 export const myInput = `357, 59
 312, 283
