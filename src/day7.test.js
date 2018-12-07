@@ -39,6 +39,101 @@ const deriveStepOrder = (instructions, delimiter = '\n') => {
   return result;
 };
 
+const letterToIndex = letter => letter.toLowerCase().charCodeAt(0) - 96;
+
+const deriveTimedStepOrder = (
+  instructions,
+  delimiter = '\n',
+  workersCount = 5
+) => {
+  // let stepsMap = Object.entries(createSteps(instructions, delimiter)).reduce(
+  //   (prev, [requiredStep, resultingSteps]) => ({
+  //     ...prev,
+  //     [requiredStep]: {
+  //       time: letterToIndex(requiredStep),
+  //       steps: resultingSteps,
+  //     },
+  //   }),
+  //   {}
+  // );
+  let stepsMap = createSteps(instructions, delimiter);
+  let candidates = Object.keys(stepsMap).filter(value =>
+    Object.values(stepsMap).every(
+      resultingSteps => !resultingSteps.includes(value)
+    )
+  );
+  let result = '';
+  let workers = new Array(workersCount).fill([[0, '']]);
+  let time = 0;
+  while (
+    candidates.length > 0 ||
+    !workers.every(([[time, _], ...rest]) => time === 0)
+  ) {
+    // const workersDone = workers.filter(([startingTime, jobLetter]) =>
+    //   jobLetter ? letterToIndex(jobLetter) + startingTime <= time : true
+    // );
+
+    // result += workersDone.reduce(
+    //   (prev, [startingTime, jobLetter]) =>
+    //     prev + jobLetter ? letterToIndex(jobLetter) : '',
+    //   ''
+    // );
+    workers = workers.map(([[jobTime, jobLetter], ...workerTimeline]) => {
+      if (jobTime > 1) {
+        time++;
+        return [
+          [jobTime - 1, jobLetter],
+          [jobTime, jobLetter],
+          ...workerTimeline,
+        ];
+      } else {
+        result += jobLetter; // Job is done -> Add letter to result string
+        const { [jobLetter]: jobLetterArray, ...otherLetters } = stepsMap; // Remove letter contraints from stepmap
+        stepsMap = otherLetters; // Reassign the new stepmap without jobLetter as it's done
+        candidates = candidates.concat(jobLetterArray || []); // Append the new candidates list with the resulting steps of finished job
+
+        const [lowestLetter, ...rest] = candidates // Find a new candidate
+          .filter(candidate =>
+            Object.values(stepsMap).every(
+              stepMap => !stepMap.includes(candidate)
+            )
+          )
+          .sort();
+        candidates = rest;
+        // console.log('??', lowestLetter, candidates);
+
+        if (lowestLetter) {
+          // If there is a new candidate available...
+          time++;
+          return [
+            [letterToIndex(lowestLetter), lowestLetter],
+            [jobTime, jobLetter],
+            ...workerTimeline,
+          ];
+        } else {
+          // Otherwise idle and hope for a job in the future...
+          time++;
+          return [[0, ''], [jobTime, jobLetter], ...workerTimeline];
+        }
+      }
+    });
+
+    // const [lowestLetter, ...rest] = candidates
+    //   .filter(candidate =>
+    //     Object.values(stepsMap).every(stepMap => !stepMap.includes(candidate))
+    //   )
+    //   .sort();
+
+    // result += lowestLetter;
+    // const { [lowestLetter]: lowerLetterArray, ...otherLetters } = stepsMap;
+    // stepsMap = otherLetters;
+
+    // candidates = rest.concat(lowerLetterArray || []);
+    // time++;
+  }
+  return workers[0].length - 2;
+};
+
 const exampleInput = `Step C must be finished before step A can begin.
 Step C must be finished before step F can begin.
 Step A must be finished before step B can begin.
@@ -91,6 +186,20 @@ describe('Day 7 Part 1:', () => {
 
   test('should correctly derive the steps order of my input', () => {
     expect(deriveStepOrder(myInput)).toBe('LFMNJRTQVZCHIABKPXYEUGWDSO');
+  });
+});
+
+describe('Day 7 Part 2', () => {
+  test('should correctly map letters to index in alphabet', () => {
+    expect(letterToIndex('a')).toBe(1);
+    expect(letterToIndex('b')).toBe(2);
+    expect(letterToIndex('z')).toBe(26);
+    expect(letterToIndex('s')).toBe(19);
+    expect(letterToIndex('j')).toBe(10);
+  });
+
+  test('should correctly map the times of all the steps', () => {
+    expect(deriveTimedStepOrder(exampleInput, '\n', 2)).toBe(15);
   });
 });
 
