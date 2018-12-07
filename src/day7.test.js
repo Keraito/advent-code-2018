@@ -44,7 +44,8 @@ const letterToIndex = letter => letter.toLowerCase().charCodeAt(0) - 96;
 const deriveTimedStepOrder = (
   instructions,
   delimiter = '\n',
-  workersCount = 5
+  workersCount = 5,
+  offset = 0
 ) => {
   let stepsMap = createSteps(instructions, delimiter);
   let candidates = Object.keys(stepsMap).filter(value =>
@@ -87,7 +88,7 @@ const deriveTimedStepOrder = (
           // If there is a new candidate available...
           time++;
           return [
-            [letterToIndex(lowestLetter), lowestLetter],
+            [letterToIndex(lowestLetter) + offset, lowestLetter],
             [jobTime, jobLetter],
             ...workerTimeline,
           ];
@@ -168,6 +169,10 @@ describe('Day 7 Part 2', () => {
 
   test('should correctly map the times of all the steps', () => {
     expect(deriveTimedStepOrder(exampleInput, '\n', 2)).toBe(15);
+  });
+
+  test('should correctly map the times of all the steps of my input', () => {
+    expect(deriveTimedStepOrder(myInput, '\n', 5, 60)).toBe(15);
   });
 });
 
