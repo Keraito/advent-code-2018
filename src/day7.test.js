@@ -46,16 +46,6 @@ const deriveTimedStepOrder = (
   delimiter = '\n',
   workersCount = 5
 ) => {
-  // let stepsMap = Object.entries(createSteps(instructions, delimiter)).reduce(
-  //   (prev, [requiredStep, resultingSteps]) => ({
-  //     ...prev,
-  //     [requiredStep]: {
-  //       time: letterToIndex(requiredStep),
-  //       steps: resultingSteps,
-  //     },
-  //   }),
-  //   {}
-  // );
   let stepsMap = createSteps(instructions, delimiter);
   let candidates = Object.keys(stepsMap).filter(value =>
     Object.values(stepsMap).every(
