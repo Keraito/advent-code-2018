@@ -69,15 +69,6 @@ const deriveTimedStepOrder = (
     candidates.length > 0 ||
     !workers.every(([[time, _], ...rest]) => time === 0)
   ) {
-    // const workersDone = workers.filter(([startingTime, jobLetter]) =>
-    //   jobLetter ? letterToIndex(jobLetter) + startingTime <= time : true
-    // );
-
-    // result += workersDone.reduce(
-    //   (prev, [startingTime, jobLetter]) =>
-    //     prev + jobLetter ? letterToIndex(jobLetter) : '',
-    //   ''
-    // );
     workers = workers.map(([[jobTime, jobLetter], ...workerTimeline]) => {
       if (jobTime > 1) {
         time++;
@@ -99,8 +90,8 @@ const deriveTimedStepOrder = (
             )
           )
           .sort();
+
         candidates = rest;
-        // console.log('??', lowestLetter, candidates);
 
         if (lowestLetter) {
           // If there is a new candidate available...
@@ -117,19 +108,6 @@ const deriveTimedStepOrder = (
         }
       }
     });
-
-    // const [lowestLetter, ...rest] = candidates
-    //   .filter(candidate =>
-    //     Object.values(stepsMap).every(stepMap => !stepMap.includes(candidate))
-    //   )
-    //   .sort();
-
-    // result += lowestLetter;
-    // const { [lowestLetter]: lowerLetterArray, ...otherLetters } = stepsMap;
-    // stepsMap = otherLetters;
-
-    // candidates = rest.concat(lowerLetterArray || []);
-    // time++;
   }
   return workers[0].length - 2;
 };
