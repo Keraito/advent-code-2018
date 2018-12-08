@@ -1,15 +1,11 @@
+const parseLicensefile = licenseFile => licenseFile.split(' ').map(Number);
+
 const sumMetadata = licenseFile =>
-  processNode(licenseFile.split(' ').map(Number))[0];
+  processNode(parseLicensefile(licenseFile))[0];
 
 const processNode = ([nChildren, nMetadata, ...rest]) => {
   let startingMetadata = 0;
   let remainders = rest;
-
-  // if (nChildren === 0) {
-  //   const metadataEntries = rest.slice(0, nMetadata);
-  //   const next = rest.slice(nMetadata);
-  //   return [metadataEntries.reduce((prev, curr) => prev + curr, 0), next];
-  // } else {
   if (nChildren > 0) {
     const [sumMetadataChildren, remainderChildren] = new Array(nChildren)
       .fill(undefined)
@@ -29,8 +25,39 @@ const processNode = ([nChildren, nMetadata, ...rest]) => {
     metadataEntries.reduce((prev, curr) => prev + curr, startingMetadata),
     next,
   ];
-  // }
 };
+
+const valuesNode = ([nChildren, nMetadata, ...rest]) => {
+  if (nChildren === 0) {
+    const metadataEntries = rest.slice(0, nMetadata);
+    const next = rest.slice(nMetadata);
+    return [metadataEntries.reduce((prev, curr) => prev + curr, 0), next];
+  } else {
+    const [remainderChildren, childrenMetadataLog] = new Array(nChildren)
+      .fill(undefined)
+      .reduce(
+        ([prev, log], _) => {
+          const [sumMetadataChild, remainderChild] = valuesNode(prev);
+          return [remainderChild, [...log, sumMetadataChild]];
+        },
+        [rest, []]
+      );
+    const metadataEntries = remainderChildren.slice(0, nMetadata);
+    const next = remainderChildren.slice(nMetadata);
+    return [
+      metadataEntries.reduce(
+        (prev, curr) =>
+          curr === 0 || curr > nChildren
+            ? prev
+            : prev + childrenMetadataLog[curr - 1],
+        0
+      ),
+      next,
+    ];
+  }
+};
+
+const valuesTree = licenseFile => valuesNode(parseLicensefile(licenseFile))[0];
 
 describe('Day 8 Part 1:', () => {
   test('should calculate the sum of the example licensefile ', () => {
@@ -39,6 +66,14 @@ describe('Day 8 Part 1:', () => {
 
   test('should calculate the sum of the example licensefile ', () => {
     expect(sumMetadata(myInput)).toBe(40309);
+  });
+});
+describe('Day 8 Part 2:', () => {
+  test('should calculate the value of the example licensefile ', () => {
+    expect(valuesTree(exampleInput)).toBe(66);
+  });
+  test('should calculate the value of my licensefile ', () => {
+    expect(valuesTree(myInput)).toBe(28779);
   });
 });
 
