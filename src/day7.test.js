@@ -172,7 +172,7 @@ describe('Day 7 Part 2', () => {
   });
 
   test('should correctly map the times of all the steps of my input', () => {
-    expect(deriveTimedStepOrder(myInput, '\n', 5, 60)).toBe(15);
+    expect(deriveTimedStepOrder(myInput, '\n', 5, 60)).toBe(1180);
   });
 });
 
